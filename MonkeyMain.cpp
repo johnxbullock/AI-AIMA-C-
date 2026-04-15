@@ -1,58 +1,3 @@
-/*
- * Insurance Optimisation as Classical Planning  [AIMA Chapter 10]
- * ==============================================================
- * This example maps a real insurance optimisation problem — drawn from
- * PrototypeV3's InsuranceAdvisor/InsuranceOptimizer subsystem — into a
- * STRIPS planning problem and solves it with ForwardPlan + BFS.
- *
- * PROBLEM STATEMENT
- * -----------------
- * Client: Sarah, age 35, monthly income R 30,000
- *   Life requirement  : R 3,000,000  (10 x R 300,000 annual income)
- *   IP requirement    : R 30,000/month income protection
- *   Monthly budget    : R 2,000/month for insurance premiums
- *
- * Existing policies (ClientProfile::ownedInsurance):
- *   OldLife (Sanlam Legacy) : R 800,000 life cover, R 900/month  <-- INADEQUATE
- *
- * Market quotes (InsuranceMarketCatalog):
- *   NewLife (Discovery)     : R 3,000,000 life,              R 1,300/month
- *   IP      (Momentum)      : R 30,000/month income protect, R   700/month
- *   Bundle  (Liberty)       : R 3,000,000 life + R 30,000 IP,R 2,000/month
- *
- * Budget constraint (which combinations exceed R 2,000/month):
- *   OldLife + NewLife = R 2,200  >  budget  → incompatible pair
- *   OldLife + Bundle  = R 2,900  >  budget  → incompatible pair
- *   NewLife + IP      = R 2,000  <= budget  → compatible ✓
- *   Bundle  alone     = R 2,000  <= budget  → compatible ✓
- *
- * STRIPS ENCODING
- * ---------------
- * State predicates (ground atoms):
- *   PolicyHeld_<X>      — policy X is currently in force
- *   NotPolicyHeld_<X>   — policy X is not held (explicit negation)
- *   LifeGapFilled       — life coverage meets the R 3,000,000 requirement
- *   IPGapFilled         — IP coverage meets the R 30,000/month requirement
- *   NotLifeGapFilled    — life gap is open
- *   NotIPGapFilled      — IP gap is open
- *
- * The budget constraint is encoded as preconditions: BuyNewLife and BuyBundle
- * both require NotPolicyHeld_OldLife, because holding OldLife alongside either
- * would push the total premium over R 2,000/month.
- *
- * EXPECTED PLAN
- * -------------
- * The planner must realise it cannot buy NewLife or Bundle while still holding
- * OldLife (budget constraint). It must first drop OldLife, then acquire cover.
- *
- * Optimal 2-step plan found by BFS:
- *   1. DropOldLife   — cancel the expensive inadequate policy  (frees R 900/month)
- *   2. BuyBundle     — acquire Liberty bundled life+IP policy  (R 2,000/month total)
- *
- * A 3-step alternative also exists:
- *   1. DropOldLife   2. BuyNewLife   3. BuyIP
- */
-
 #include <QCoreApplication>
 #include <QDebug>
 #include "engine/planning/planning_problem.h"
@@ -128,23 +73,17 @@ int main(int argc, char *argv[])
     // =======================================================================
     // 3.  ACTION SCHEMAS
     //
-    // These correspond to the operations that InsuranceAdvisor can recommend.
-    // Action::convert() transforms ~X into NotX for the STRIPS negation convention.
-    //
-    // Each action lists:
-    //   Precond — what must be true before the action can be taken
-    //   Effect  — what becomes true (and, implicitly, what becomes false)
-    //
-    // The act() method automatically retracts the complementary literal:
-    //   adding PolicyHeld_X  → retracts NotPolicyHeld_X
-    //   adding NotPolicyHeld_X → retracts PolicyHeld_X
-    // =======================================================================
-
-    // --- DropOldLife --------------------------------------------------------
-    // Cancel the existing Sanlam Legacy policy.
-    // This frees R 900/month of budget.
-    // Effect: ~PolicyHeld_OldLife is converted to NotPolicyHeld_OldLife, which
     //         in turn retracts PolicyHeld_OldLife from the state.
+    Action Go(
+        "GO",
+        {
+            expr("At"),
+        },
+        {
+            expr("At")
+        }
+        );
+
     Action dropOldLife(
         "DropOldLife",
         /*precond*/ {
@@ -152,9 +91,9 @@ int main(int argc, char *argv[])
         },
         /*effect*/  {
             ~expr("PolicyHeld_OldLife"),    // → NotPolicyHeld_OldLife
-                                            //   retracts PolicyHeld_OldLife
+            //   retracts PolicyHeld_OldLife
         }
-    );
+        );
 
     // --- BuyNewLife ---------------------------------------------------------
     // Buy the Discovery 3,000,000 life policy (R 1,300/month).
@@ -171,7 +110,7 @@ int main(int argc, char *argv[])
             expr("PolicyHeld_NewLife"),     // retracts NotPolicyHeld_NewLife
             expr("LifeGapFilled"),          // retracts NotLifeGapFilled
         }
-    );
+        );
 
     // --- BuyIP --------------------------------------------------------------
     // Buy the Momentum R 30,000/month income-protection policy (R 700/month).
@@ -186,7 +125,7 @@ int main(int argc, char *argv[])
             expr("PolicyHeld_IP"),          // retracts NotPolicyHeld_IP
             expr("IPGapFilled"),            // retracts NotIPGapFilled
         }
-    );
+        );
 
     // --- BuyBundle ----------------------------------------------------------
     // Buy the Liberty bundled life+IP policy (R 3,000,000 life + R 30,000 IP,
@@ -204,7 +143,7 @@ int main(int argc, char *argv[])
             expr("LifeGapFilled"),          // retracts NotLifeGapFilled
             expr("IPGapFilled"),            // retracts NotIPGapFilled
         }
-    );
+        );
 
     // actions are objects - we construct them
 
@@ -217,7 +156,7 @@ int main(int argc, char *argv[])
         initial,
         goals,
         { dropOldLife, buyNewLife, buyIP, buyBundle }
-    );
+        );
 
     // =======================================================================
     // 5.  PRINT SETUP INFORMATION

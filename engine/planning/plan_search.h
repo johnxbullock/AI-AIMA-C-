@@ -15,6 +15,8 @@
 // The search starts from the conjunction of the initial facts and tries to
 // reach a state that satisfies every goal literal.
 // ============================================================================
+
+// forward plan is derived from problem
 class ForwardPlan : public Problem<Expr, Action> {
 public:
     explicit ForwardPlan(const PlanningProblem &pp);

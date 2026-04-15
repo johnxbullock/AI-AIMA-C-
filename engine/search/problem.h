@@ -123,7 +123,7 @@ public:
     // Path from root to this node (as a list of nodes)
     QVector<NodePtr> path() const {
         QVector<NodePtr> p;
-        auto n = this->shared_from_this();
+        auto n = std::const_pointer_cast<Node<S,A>>(this->shared_from_this());
         while (n) {
             p.prepend(n);
             n = n->parent;

@@ -13,11 +13,13 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
 
 add_executable(ClassicalPlanning
-  main.cpp
+  #main.cpp
+  MonkeyMain.cpp
 )
 
 add_subdirectory(domain)
 add_subdirectory(engine)
+add_subdirectory(problems)
 
 target_link_libraries(ClassicalPlanning Qt${QT_VERSION_MAJOR}::Core domain engine)
 

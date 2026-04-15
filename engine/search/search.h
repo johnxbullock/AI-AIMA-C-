@@ -182,7 +182,7 @@ std::shared_ptr<Node<S, A>> breadthFirstGraphSearch(const Problem<S, A> &problem
         frontierStates.remove(node->state);
         explored.insert(node->state);
 
-        for (auto &child : node->expand(problem)) {
+        for (auto &child : node->expand(problem)) { // problem provides logic for expanding
             if (!explored.contains(child->state) &&
                 !frontierStates.contains(child->state)) {
                 if (problem.goalTest(child->state))

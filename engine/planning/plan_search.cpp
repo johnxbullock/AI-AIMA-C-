@@ -13,7 +13,7 @@ ForwardPlan::ForwardPlan(const PlanningProblem &pp)
 {}
 
 /*
- * Get the actions that can be performed in this state?
+ * Get the actions that can be performed in this state
  */
 QVector<Action> ForwardPlan::actions(const Expr &state) const {
     QVector<Expr> stateFacts = conjuncts(state); // get the ?
@@ -21,8 +21,8 @@ QVector<Action> ForwardPlan::actions(const Expr &state) const {
     for (const Action &action : m_expandedActions) {
         bool ok = true;
         for (const Expr &pre : action.precond())
-            if (!stateFacts.contains(pre)) { ok = false; break; }
-        if (ok)
+            if (!stateFacts.contains(pre)) { ok = false; break; } // check the Preconditions is subset of statefacts
+        if (ok) // if yes, we can do the action in this state
             result.append(action);
     }
     return result;
