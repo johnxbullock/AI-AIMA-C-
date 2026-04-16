@@ -102,13 +102,13 @@ public:
 
     // Create the child node reached by applying act in this node's state
     NodePtr childNode(const Problem<S, A> &problem, const A &act) const {
-        S next = problem.result(state, act);
+        S next = problem.result(state, act); // returns a KB for ForwardPlan
         double cost = problem.pathCost(pathCost, state, act, next);
         return std::make_shared<Node<S, A>>(
             next,
             std::const_pointer_cast<Node<S, A>>(this->shared_from_this()),
-            act,
-            cost
+            act, // action that produced the node
+            cost // cost of applying the action
         );
     }
 

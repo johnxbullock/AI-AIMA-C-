@@ -14,6 +14,7 @@ ForwardPlan::ForwardPlan(const PlanningProblem &pp)
 
 /*
  * Get the actions that can be performed in this state
+ * state is modelled as an Expr - not a separate struct
  */
 QVector<Action> ForwardPlan::actions(const Expr &state) const {
     QVector<Expr> stateFacts = conjuncts(state); // get the ?
@@ -31,7 +32,7 @@ QVector<Action> ForwardPlan::actions(const Expr &state) const {
 Expr ForwardPlan::result(const Expr &state, const Action &action) const {
     // act() applies the ground effects: adds positive facts, retracts their negations
     FolKB kb = action.act(conjuncts(state), action.args());
-    return associate(QStringLiteral("&"), kb.clauses);
+    return associate(QStringLiteral("&"), kb.clauses); // flattens the FolKB - so state is Expr
 }
 
 bool ForwardPlan::goalTest(const Expr &state) const {

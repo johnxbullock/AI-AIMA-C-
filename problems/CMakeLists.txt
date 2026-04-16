@@ -10,8 +10,8 @@ set_target_properties(problems PROPERTIES
 )
 
 target_sources(problems PRIVATE
-    monkey.h monkey.cpp
-    MonkeyDomain.h
+
+    monkey.h
 )
 
 target_compile_features(problems PUBLIC cxx_std_17)

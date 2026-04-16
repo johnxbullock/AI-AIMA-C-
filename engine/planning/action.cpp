@@ -138,11 +138,11 @@ FolKB Action::act(FolKB kb, const QVector<Expr> &args) const {
         throw std::runtime_error("Action::act — preconditions not satisfied for "
                                  + toString().toStdString());
     for (const Expr &clause : m_effect) {
-        Expr ground = substitute(clause, args);
-        kb.tell(ground);
+        Expr ground = substitute(clause, args); //ground the effect
+        kb.tell(ground); // add the effects of the action to the kb
         // retract the contradicting literal
-        Expr contra(negation(ground.op()), ground.args());
-        kb.retract(contra);
+        Expr contra(negation(ground.op()), ground.args()); // retract
+        kb.retract(contra); // retract the negation?
     }
     return kb;
 }
