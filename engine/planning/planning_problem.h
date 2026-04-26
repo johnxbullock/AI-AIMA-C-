@@ -42,6 +42,9 @@ public:
     // Objects are collected from the initial-state KB clauses.
     QVector<Action> expandActions() const;
 
+    // manual implementation for testing
+    QVector<Action> expandActionsMan() const;
+
 private:
     FolKB          m_kb;
     QVector<Expr>  m_goals;

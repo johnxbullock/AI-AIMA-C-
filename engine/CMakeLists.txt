@@ -10,8 +10,6 @@ set_target_properties(engine PROPERTIES
 )
 
 target_sources(engine PRIVATE
-    PlanningProblem.h PlanningProblem.cpp
-    orchestrator.h orchestrator.cpp
     logic/expr.h   logic/expr.cpp
     logic/utils.h  logic/utils.cpp
     logic/cnf.h    logic/cnf.cpp
@@ -26,6 +24,9 @@ target_sources(engine PRIVATE
     planning/plan_search.h      planning/plan_search.cpp
     search/problem.h
     search/search.h
+    csp/csp.h
+    csp/nary_csp.h
+    csp/csp_problems.h
 )
 
 target_compile_features(engine PUBLIC cxx_std_17)

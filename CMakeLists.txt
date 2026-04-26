@@ -14,7 +14,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
 
 add_executable(ClassicalPlanning
   #main.cpp
-  MonkeyMain.cpp
+  #MonkeyMain.cpp
+  CspMain.cpp
 )
 
 add_subdirectory(domain)

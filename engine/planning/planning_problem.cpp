@@ -98,6 +98,68 @@ QVector<Action> PlanningProblem::expandActions() const {
     return result;
 }
 
+// =============================================================================
+
+
+void GeneratePermuations(QVector<Expr> pool,
+                         int r,
+                            QList<bool>& used,
+                            QVector<Expr> current,
+                            QVector<QVector<Expr>> result
+                        )
+{
+    if (current.size()==r) {result.append(current);return;}
+
+    for (int i =0; i <= pool.count(); i++) {
+        if (!used[i]) {
+            used[i] = true;
+            current.append(pool[i]);
+            GeneratePermuations(pool, r, used, current, result);
+            current.removeLast();
+            used[i] = false;
+        }
+    }
+}
+
+// generates all permutations of objects, taken 2 at a time
+QVector<QVector<Expr>> Permutations(QSet<Expr> objects,int r) {
+    QVector<QVector<Expr>> result;
+    if (r == 0) {result.append(QVector<Expr>()); return result;}
+
+    QVector<Expr> pool(objects.begin(), objects.end());
+
+    // keep track of what is used
+    QList<bool> used(objects.size(), false);
+    QVector<Expr> current;
+
+    GeneratePermuations(pool,r, used, current, result);
+
+    return result;
+}
+
+
+QVector<Action> PlanningProblem::expandActionsMan() const
+{
+    // first we need to get the objects
+    QSet<Expr> objects;
+    for (const Expr& clause: m_kb.clauses) { // but how were the clauses created
+        for (const Expr& arg: clause.args()) {
+            objects.insert(arg); //
+        }
+    }
+
+    QList<Action> result;
+
+    for (const Action& action: m_actions) { // go through each action
+        for (const QVector<Expr>& perm: Permutations(objects,action.args().count())) {
+            continue;
+        }
+    }
+
+    return result;
+
+}
+
 // ============================================================================
 // Free functions
 // ============================================================================
